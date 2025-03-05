@@ -1,0 +1,1 @@
+# 8. scipy.optimize.fmin 함수를 이해하고, 그를 활용하여 6번의 최적의 translation 값을 출력해본다.

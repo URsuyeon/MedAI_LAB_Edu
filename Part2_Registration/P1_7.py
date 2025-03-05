@@ -1,0 +1,1 @@
+# 7. 5번의 그래프를 2배 interpolation해보시오 (bilinear, library 함수 사용 가능)

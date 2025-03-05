@@ -1,0 +1,1 @@
+# 3. 원본 이미지(image.1.tif)의 entropy를 구하시오 (-∑ plog(p) )
