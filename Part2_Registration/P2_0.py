@@ -21,17 +21,29 @@ print("Dimension:", dicom_image.dimension)
 # NumPy 배열 변환
 numpy_array = dicom_image.numpy()
 
-fig, axes = plt.subplots(1, 3, figsize=(12, 4))
+fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
 # NumPy 변환 후 시각화 
-axes[0].imshow(numpy_array[:, :, numpy_array.shape[2] // 2], cmap="gray")  # Axial (XY)
-axes[0].set_title("Axial")
+axes[0, 0].imshow(numpy_array[:, :, numpy_array.shape[2] // 2], cmap="gray")  # Axial (XY)
+axes[0, 0].set_title("NumPy - Axial")
 
-axes[1].imshow(numpy_array[:, numpy_array.shape[1] // 2, :], cmap="gray")  # Coronal (XZ)
-axes[1].set_title("Coronal")
+axes[0, 1].imshow(numpy_array[:, numpy_array.shape[1] // 2, :], cmap="gray")  # Coronal (XZ)
+axes[0, 1].set_title("NumPy - Coronal")
 
-axes[2].imshow(numpy_array[numpy_array.shape[0] // 2, :, :], cmap="gray")  # Sagittal (YZ)
-axes[2].set_title("Sagittal")
+axes[0, 2].imshow(numpy_array[numpy_array.shape[0] // 2, :, :], cmap="gray")  # Sagittal (YZ)
+axes[0, 2].set_title("NumPy - Sagittal")
 
+# ANTs plot 시각화 
+for axis in range(3):
+    slice_indices = np.any(numpy_array, axis=(axis + 1) % 3)  
+    valid_slices = np.where(slice_indices)[0]  
+    
+    slice_index = min(valid_slices[len(valid_slices) // 2], numpy_array.shape[axis] - 1)
+
+    transformed_img = ants.slice_image(dicom_image, axis=axis, idx=slice_index).numpy()
+    axes[1, 2-axis].imshow(transformed_img, cmap="gray")
+    axes[1, 2-axis].set_title(f"ANTs - Axis {axis}")
+
+plt.suptitle("NumPy vs ANTs", fontsize=14, fontweight="bold")
 plt.tight_layout()
 plt.show()
