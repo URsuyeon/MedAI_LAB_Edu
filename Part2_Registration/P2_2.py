@@ -52,8 +52,10 @@ def visual(fixed, moving, warped, title, output_dir, rows=4, cols=3):
     z_dim = min(fixed.shape[2], moving_resampled.shape[2], warped_resampled.shape[2])
     slice_indices = np.linspace(z_dim//8, z_dim*7//8, rows*cols, dtype=int)
     
-    fig, axes = plt.subplots(rows, cols*2, figsize=(cols*5, rows*4))
+    fig, axes = plt.subplots(rows, cols*2, figsize=(7,4))
     plt.suptitle(title, fontsize=16)
+    
+    plt.subplots_adjust(wspace=0.001, hspace=0.001)
     
     for i, idx in enumerate(slice_indices):
         row, col = divmod(i, cols)
@@ -69,7 +71,6 @@ def visual(fixed, moving, warped, title, output_dir, rows=4, cols=3):
         axes[row, col+cols].imshow(warped_slice, cmap='hot', alpha=0.5)
         axes[row, col+cols].axis('off')
     
-    plt.tight_layout()
     plt.savefig(f"{output_dir}/{title.replace(' ', '_').lower()}_grid.png")
 
 output_dir = "/home/suyeon/result"
@@ -91,6 +92,6 @@ registrations = {
 }
 
 # 결과 시각화
-visual(images["T1c"], images["FLAIR"], registrations["FLAIR_to_T1c"]['warpedmovout'], "FLAIR to T1c Registration", output_dir)
+visual(images["T1c"], images["FLAIR"], registrations["FLAIR_to_T1c"]['warpedmovout'], "FLAIR to T1c", output_dir)
 visual(images["FLAIR"], images["T2"], registrations["T2_to_FLAIR_Affine"]['warpedmovout'], "T2 to FLAIR (Affine)", output_dir)
 visual(images["FLAIR"], images["T2"], registrations["T2_to_FLAIR_SyN"]['warpedmovout'], "T2 to FLAIR (SyN)", output_dir)
