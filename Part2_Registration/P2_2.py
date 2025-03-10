@@ -32,11 +32,8 @@ def load_images(paths):
     return {name: ants.image_read(path) for name, path in paths.items()}
 
 def register_images(fixed, moving, transform_type, outprefix):
-    
     moving_resampled = ants.resample_image(moving, fixed.shape, use_voxels=True)
-    
-    reg_result = ants.registration(fixed, moving_resampled, type_of_transform=transform_type)
-    ants.image_write(reg_result['warpedmovout'], f"{outprefix}warped.nii.gz")
+    reg_result = ants.registration(fixed, moving_resampled, type_of_transform=transform_type, outprefix=outprefix)
     
     return reg_result
 
@@ -86,12 +83,14 @@ images = load_images(image_paths)
 
 # 정합, 결과 저장
 registrations = {
-    "FLAIR_to_T1c": register_images(images["T1c"], images["FLAIR"], "SyN", f"{output_dir}/flair_to_t1c_"),
+    "FLAIR_to_T1c_Affine": register_images(images["T1c"], images["FLAIR"], "Affine", f"{output_dir}/flair_to_t1c_affine_"),
+    "FLAIR_to_T1c_SyN": register_images(images["T1c"], images["FLAIR"], "SyN", f"{output_dir}/flair_to_t1c_syn_"),
     "T2_to_FLAIR_Affine": register_images(images["FLAIR"], images["T2"], "Affine", f"{output_dir}/t2_to_flair_affine_"),
     "T2_to_FLAIR_SyN": register_images(images["FLAIR"], images["T2"], "SyN", f"{output_dir}/t2_to_flair_syn_")
 }
 
 # 결과 시각화
-visual(images["T1c"], images["FLAIR"], registrations["FLAIR_to_T1c"]['warpedmovout'], "FLAIR to T1c", output_dir)
+visual(images["T1c"], images["FLAIR"], registrations["FLAIR_to_T1c_Affine"]['warpedmovout'], "FLAIR to T1c (Affine)", output_dir)
+visual(images["T1c"], images["FLAIR"], registrations["FLAIR_to_T1c_SyN"]['warpedmovout'], "FLAIR to T1c (SyN)", output_dir)
 visual(images["FLAIR"], images["T2"], registrations["T2_to_FLAIR_Affine"]['warpedmovout'], "T2 to FLAIR (Affine)", output_dir)
 visual(images["FLAIR"], images["T2"], registrations["T2_to_FLAIR_SyN"]['warpedmovout'], "T2 to FLAIR (SyN)", output_dir)
