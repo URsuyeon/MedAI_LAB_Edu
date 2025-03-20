@@ -16,7 +16,7 @@ def convert_png_to_nii(png_path, nii_path):
     nib.save(nii_img, nii_path)
 
 # 데이터셋 기본 정보
-dataset_id = 542
+dataset_id = 546
 dataset_name = "COVID19"
 nnunet_raw_path = f"/home/suyeon/nnUNet/raw/Dataset{dataset_id}_{dataset_name}"
 
@@ -35,13 +35,13 @@ for img_file in train_images:
     base_name = os.path.splitext(img_file)[0]
 
     # 이미지 이동 (파일명 뒤에 _0000 추가)
-    shutil.move(
+    shutil.copy2(
         os.path.join(source_dir, "train", "images", img_file),
         os.path.join(nnunet_raw_path, "imagesTr", f"{base_name}_0000.png")
     )
 
     # 마스크 이동
-    shutil.move(
+    shutil.copy2(
         os.path.join(source_dir, "train", "masks", img_file),
         os.path.join(nnunet_raw_path, "labelsTr", f"{base_name}.png")
     )
@@ -52,7 +52,7 @@ test_images = os.listdir(os.path.join(source_dir, "test", "images"))
 for img_file in test_images:
     base_name = os.path.splitext(img_file)[0]
     
-    shutil.move(
+    shutil.copy2(
         os.path.join(source_dir, "test", "images", img_file),
         os.path.join(nnunet_raw_path, "imagesTs", f"{base_name}_0000.png")
     )
@@ -129,11 +129,10 @@ nii_image_dir = os.path.join(nnunet_raw_path, "imagesTr")
 dataset_info = {
     "dataset_id": dataset_id,  
     "name": "COVID19",
-    "description": "Lung mask segmentation dataset for COVID-19",
+    "description": "Lung mask segmentation dataset for COVID-19 X-ray images",
     "tensorImageSize": "2D",
-    "reference": "https://www.kaggle.com/",
-    "licence": "CC BY 4.0",
-    "release": "1.0",
+    "reference": "https://www.kaggle.com/datasets/tawsifurrahman/covid19-radiography-database/data",
+    "release": "5.0",
     "channel_names": {"0": "X-ray"},  
     "labels": {"background": 0, "lung": 1},  
     "numTraining": len(os.listdir(nii_image_dir)),  
@@ -164,4 +163,8 @@ print("모든 작업 완료: nnU-Net 형식으로 데이터 정리 및 NIfTI 변
 # nnUNetv2_plan_and_preprocess -d 542 --verify_dataset_integrity
 # 제일 기본으로 학습 시작
 # nnUNetv2_train Dataset542_COVID19 2d 0 
+# nnUNetv2_train 542 2d 0 
+# nnUNetv2_train Dataset502_COVID19 2d 0 -tr nnUNetTrainer_10epochs
 # nnUNetv2_predict -i /home/suyeon/nnUNet/raw/Dataset542_COVID19/imagesTs -o /home/suyeon/nnUNet/predictions/Dataset542_COVID19 -d Dataset542_COVID19 -c 2d -f 0
+# "\\wsl.localhost\Ubuntu-22.04\home\suyeon\nnUNet\preprocessed\Dataset542_COVID19"
+# nnUNetv2_predict -i /home/suyeon/nnUNet/raw/Dataset542_COVID19/imagesTs -o /home/suyeon/nnUNet/preprocessed/Dataset542_COVID19/predictions -d Dataset542_COVID19 -c 2d -f 0
